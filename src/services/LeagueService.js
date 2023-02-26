@@ -1,69 +1,82 @@
-/**
- * A class representing a service that processes the data for match schedule
- * and generates leaderboard.
- * 
- * NOTE: MAKE SURE TO IMPLEMENT ALL EXISITNG METHODS BELOW WITHOUT CHANGING THE INTERFACE OF THEM, 
- *       AND PLEASE DO NOT RENAME, MOVE OR DELETE THIS FILE.  
- * 
- */
-class LeagueService {    
-    
-    /**
-     * Sets the match schedule.
-     * Match schedule will be given in the following form:
-     * [
-     *      {
-     *          matchDate: [TIMESTAMP],
-     *          stadium: [STRING],
-     *          homeTeam: [STRING],
-     *          awayTeam: [STRING],
-     *          matchPlayed: [BOOLEAN],
-     *          homeTeamScore: [INTEGER],
-     *          awayTeamScore: [INTEGER]
-     *      },
-     *      {
-     *          matchDate: [TIMESTAMP],
-     *          stadium: [STRING],
-     *          homeTeam: [STRING],
-     *          awayTeam: [STRING],
-     *          matchPlayed: [BOOLEAN],
-     *          homeTeamScore: [INTEGER],
-     *          awayTeamScore: [INTEGER]
-     *      }    
-     * ]
-     * 
-     * @param {Array} matches List of matches.
-     */    
-    setMatches(matches) {}
+import { api } from "../config/axios";
 
-    /**
-     * Returns the full list of matches.
-     * 
-     * @returns {Array} List of matches.
-     */
-    getMatches() {}
+class LeagueService {
+  setMatches(matches) {
+    this.matches = matches;
+  }
 
-    /**
-     * Returns the leaderboard in a form of a list of JSON objecs.
-     * 
-     * [     
-     *      {
-     *          teamName: [STRING]',
-     *          matchesPlayed: [INTEGER],
-     *          goalsFor: [INTEGER],
-     *          goalsAgainst: [INTEGER],
-     *          points: [INTEGER]     
-     *      },      
-     * ]       
-     * 
-     * @returns {Array} List of teams representing the leaderboard.
-     */
-    getLeaderboard() {}
-    
-    /**
-     * Asynchronic function to fetch the data from the server.
-     */
-    async fetchData() {}    
+  getMatches() {
+    return this.matches;
+  }
+
+  getLeaderboard() {
+    const teams = {};
+
+    // iterate over matches to accumulate stats for each team
+    for (const match of this.matches) {
+      const homeTeam = match.homeTeam;
+      const awayTeam = match.awayTeam;
+      const homeTeamScore = match.homeTeamScore;
+      const awayTeamScore = match.awayTeamScore;
+
+      // update home team stats
+      if (!teams[homeTeam]) {
+        teams[homeTeam] = {
+          teamName: homeTeam,
+          matchesPlayed: 0,
+          goalsFor: 0,
+          goalsAgainst: 0,
+          points: 0,
+        };
+      }
+      teams[homeTeam].matchesPlayed++;
+      teams[homeTeam].goalsFor += homeTeamScore;
+      teams[homeTeam].goalsAgainst += awayTeamScore;
+      if (homeTeamScore > awayTeamScore) {
+        teams[homeTeam].points += 3;
+      } else if (homeTeamScore === awayTeamScore) {
+        teams[homeTeam].points += 1;
+      }
+
+      // update away team stats
+      if (!teams[awayTeam]) {
+        teams[awayTeam] = {
+          teamName: awayTeam,
+          matchesPlayed: 0,
+          goalsFor: 0,
+          goalsAgainst: 0,
+          points: 0,
+        };
+      }
+      teams[awayTeam].matchesPlayed++;
+      teams[awayTeam].goalsFor += awayTeamScore;
+      teams[awayTeam].goalsAgainst += homeTeamScore;
+      if (awayTeamScore > homeTeamScore) {
+        teams[awayTeam].points += 3;
+      } else if (awayTeamScore === homeTeamScore) {
+        teams[awayTeam].points += 1;
+      }
+    }
+
+    // convert object to array and sort by points, goalsFor, and teamName
+    const teamArray = Object.values(teams);
+    teamArray.sort((a, b) => {
+      if (a.points !== b.points) {
+        return b.points - a.points;
+      }
+      if (a.goalsFor !== b.goalsFor) {
+        return b.goalsFor - a.goalsFor;
+      }
+      return a.teamName.localeCompare(b.teamName);
+    });
+    console.log("teamArray");
+    return teamArray;
+  }
+
+  async fetchData() {
+    const response = await api("/getAllMatches");
+    this.matches = response.data.matches;
+  }
 }
 
 export default LeagueService;
