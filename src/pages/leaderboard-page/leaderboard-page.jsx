@@ -28,7 +28,7 @@ export const LeaderBoardPage = () => {
           <span className="titleLeaderboard">League Standigs</span>
           <table className="LeaderboardTable">
             <tr>
-              {size.width >= 700 ? (
+              {size.width >= 701 ? (
                 <>
                   <td className="tableHeader team">Team Name</td>
                   <td className="tableHeader mp">MP</td>
@@ -53,7 +53,7 @@ export const LeaderBoardPage = () => {
 
               return (
                 <>
-                  {size.width >= 700 ? (
+                  {size.width >= 701 ? (
                     <>
                       <tr className="lineTable">
                         <td className="show teamName">

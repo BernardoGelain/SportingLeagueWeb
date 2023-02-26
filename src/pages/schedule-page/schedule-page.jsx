@@ -26,8 +26,8 @@ export const SchedulePage = () => {
         <div className="containerLeaderboard ">
           <span className="titleLeaderboard">League Schedule</span>
           <table className="LeaderboardTable">
-            <tr>
-              {size.width >= 700 ? (
+            <tr className="">
+              {size.width >= 701 ? (
                 <>
                   <td className="tableHeader data">Date/Time</td>
                   <td className="tableHeader stadiumHeader">Stadium</td>
@@ -63,9 +63,9 @@ export const SchedulePage = () => {
 
               return (
                 <>
-                  {size.width >= 700 ? (
-                    <>
-                      <tr className="scheduleTable">
+                  {size.width >= 701 ? (
+                    <tr className="scheduleTable">
+                      <>
                         <td className="match data">{formattedDate}</td>
                         <td className="match stadium">{team.stadium}</td>
                         <td className="match null"></td>
@@ -83,11 +83,11 @@ export const SchedulePage = () => {
                             <span>{team.awayTeam}</span>
                           </div>
                         </td>
-                      </tr>
-                    </>
+                      </>
+                    </tr>
                   ) : (
                     <>
-                      <tr className="lineTable">
+                      <tr className="scheduleTable">
                         <td className="match data">{formattedDate}</td>
 
                         <td className="match teamHome">
